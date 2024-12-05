@@ -2,11 +2,14 @@ CREATE TABLE IF NOT EXISTS Organizations (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(250) NOT NULL
 );
-CREATE TABLE IF NOT EXISTS Channels(
+CREATE TABLE IF NOT EXISTS Messages (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(250) NOT NULL,
-    organization_id INT NOT NULL,
-    FOREIGN KEY(organization_id) REFERENCES Organizations(id) ON DELETE CASCADE
+    content TEXT NOT NULL,
+    post_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    user_id INT NOT NULL,
+    channel_id INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES Users(id),
+    FOREIGN KEY (channel_id) REFERENCES Channels(id) ON DELETE CASCADE
 );
 CREATE TABLE IF NOT EXISTS Users(
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -21,8 +24,23 @@ CREATE TABLE IF NOT EXISTS Messages(
     FOREIGN KEY(user_id) REFERENCES Users(id),
     FOREIGN KEY(channel_id) REFERENCES Channels(id) ON DELETE CASCADE
 );
+CREATE TABLE IF NOT EXISTS Channels_users_subscribed(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    channel_id INT,
+    FOREIGN KEY(user_id) REFERENCES Users(id) ON DELETE CASCADE,
+    FOREIGN KEY(channel_id) REFERENCES Channels(id) ON DELETE CASCADE
+);
 USE chat_system;
--- inserting values in organization table
+-- inserting channels users subscribed
+INSERT INTO Channels_users_subscribed (user_id, channel_id)
+VALUES (1, 1),
+    (1, 2),
+    (2, 1),
+    (3, 2);
+-- select * from Channels_users_subscribed
+inserting
+values in organization table
 INSERT INTO Organizations (name)
 VALUES ("Lambda School");
 -- inserting values into users table
@@ -120,9 +138,8 @@ where user_id IN (
         WHERE name = "#random"
     );
 -- List the count of messages across all channels per user
--- SELECT
-u.name,
-COUNT(*) AS Message_Count
+SELECT u.name,
+    COUNT(*) AS Message_Count
 FROM Users u
     LEFT JOIN Messages m ON u.id = m.user_id
 GROUP BY u.name;
