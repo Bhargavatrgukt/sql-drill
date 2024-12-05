@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS Messages(
     post_time TIMESTAMP DEFAULT current_timestamp,
     user_id INT NOT NULL,
     channel_id INT NOT NULL,
-    FOREIGN KEY(user_id) REFERENCES Users(id) ON DELETE CASCADE,
+    FOREIGN KEY(user_id) REFERENCES Users(id),
     FOREIGN KEY(channel_id) REFERENCES Channels(id) ON DELETE CASCADE
 );
 USE chat_system;
